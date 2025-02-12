@@ -1,7 +1,7 @@
-from PIL import Image, ImageDraw, ImageFont
 import random
 from typing import List
 import os
+from PIL import Image, ImageDraw, ImageFont
 
 class Receipt:
   def __init__(
@@ -19,7 +19,7 @@ class Receipt:
     self.image = Image.new(mode=self.mode, size=self.size, color=self.color)
     self.draw = ImageDraw.Draw(self.image)
     self.w, self.h = self.image.size
-    self.font_path = random.choice([path for path in os.listdir(fonts_dir) if path.endswith(".ttf")])
+    self.font_path = random.choice([os.path.join(fonts_dir, path) for path in os.listdir(fonts_dir) if path.endswith(".ttf")])
   
   def reset(self):
     self.image = Image.new(mode=self.mode, size=self.size, color=self.color)
