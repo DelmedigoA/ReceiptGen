@@ -7,6 +7,7 @@ from barcode.writer import ImageWriter
 from uuid import uuid4
 from src.utils import get_height, get_random_date, get_random_telephone
 from faker import Faker
+import numpy as np
 
 class Receipt:
     def __init__(
@@ -41,6 +42,17 @@ class Receipt:
             random.shuffle(products)
             self.products = list(set([p.strip().replace("  ", " ") for p in products if len(p) < 20]))
     
+    def crop_top_bottom_white_borders(self):
+        arr = np.array(self.image)
+        white_rows = np.all(arr == 255, axis=1)
+        nonwhite = np.where(~white_rows)[0]
+        if nonwhite.size == 0:
+            pass
+        top = nonwhite[0]
+        bottom = nonwhite[-1] + 1
+        cropped = arr[top:bottom, :]
+        self.image = Image.fromarray(cropped, 'L')
+  
     def set_stores(self):
         with open(f"/content/ReceiptGen/resources/{self.lang}/stores/names.txt", "r") as file:
             text = file.read()
