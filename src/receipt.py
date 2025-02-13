@@ -69,7 +69,8 @@ class Receipt:
     def bar_down(self, space=3):
         self.y += self.texts[-1]["height"] + space
 
-    def add_barcode(self, space=3, width=150):
+    def add_barcode(self, space=3, width=300):
+        self.bar_down(5)
         number = str(uuid4())[:18] if random.random() > .5 else str(random.randint(1000000000000000, 9999999999999999))
         barcode_obj = barcode.get_barcode_class("code39")
         my_ean = barcode_obj(number, writer=ImageWriter())
