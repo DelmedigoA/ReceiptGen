@@ -21,7 +21,7 @@ class Receipt:
         self.mode = mode
         self.size = size
         self.color = color
-        self.direction = "rtl" if self.lang == "he" else "ltr"
+        self.direction = "rtl"
         self.image = Image.new(mode=self.mode, size=self.size, color=self.color)
         self.draw = ImageDraw.Draw(self.image)
         self.w, self.h = self.image.size
