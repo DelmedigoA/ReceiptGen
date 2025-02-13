@@ -46,7 +46,6 @@ class Receipt:
             stores = text.split("\n")
             random.shuffle(stores)
             stores = list(set([s.strip().replace("  ", " ") for s in stores]))
-
         self.israel_supermarkets = stores
 
     def reset(self):
@@ -58,7 +57,6 @@ class Receipt:
 
     def add_text(self, text, x, font_size, fill=(0)):
         font = ImageFont.truetype(self.font_path, size=font_size)
-        # Calculate x based on the text length and the receipt width
         d = self.w - font.getlength(text)
         mult_fct = 1 / x
         x = int(d * mult_fct)
@@ -96,7 +94,6 @@ class Receipt:
         self.image.paste(barcode_img, (paste_x, paste_y))
         self.texts.append(dict(text="BARCOD", x=paste_x, y=self.y, height=new_height))
 
-    
     def show(self):
         display(self.image)
 
@@ -110,16 +107,19 @@ class Receipt:
     
     def add_summary(self):
         self.bar_down(random.randint(0, self.h // 40))
-        self.add_text(text="תשלום ללא מעמ                         180.73", x=random.choice([2]), font_size=self.h // 43)
+        base_total_str = "{:.2f}".format(self.total_without_maam)
+        self.add_text(text="תשלום ללא מעמ                         " + base_total_str, x=random.choice([2]), font_size=self.h // 43)
         self.bar_down(random.randint(0, self.h // 40))
-        self.add_text(text="סהכ לתשלום                        203.17", x=random.choice([2]), font_size=self.h // 43)
+        final_total = self.total_without_maam * 1.18  # adding 18.0% VAT
+        final_total_str = "{:.2f}".format(final_total)
+        self.add_text(text="סהכ לתשלום                        " + final_total_str, x=random.choice([2]), font_size=self.h // 43)
     
     def add_dotted_lines_before_table(self):
         self.bar_down(random.randint(0, self.h // 20))
         self.add_text(text=" ".join(["-"] * (self.h // 3)), x=random.choice([2]), font_size=self.h // 43)
     
-    def add_table(self,):
-        prod_list=self.products
+    def add_table(self):
+        prod_list = self.products
         self.bar_down(random.randint(0, self.h // 10))
         columns = ["תיאור", "מחיר", "כמות", "לתשלום"]
         xs = [1.15, 2, 3, 10]
@@ -135,12 +135,14 @@ class Receipt:
         prod_items = []
         for name, price, quantity in zip(product_names, product_prices, quantities):
             prod_items.append({"name": name, "price": price, "quantity": quantity})
+        self.total_without_maam = 0.0  # initialize the sum before VAT
         self.bar_down(random.randint(0, self.h // 20))
         b_down = random.randint(0, self.h // 30)
         for product in prod_items:
             self.add_text(text=product["price"], x=2, font_size=14)
             self.add_text(text=str(product["quantity"]), x=3, font_size=14)
             row_total = float(product["price"]) * product["quantity"]
+            self.total_without_maam += row_total
             row_total_str = "{:.2f}".format(row_total)
             self.add_text(text=" ₪" + row_total_str, x=10, font_size=12)
             self.add_text(text=product["name"], x=1.15, font_size=14)
@@ -171,7 +173,7 @@ class Receipt:
         self.add_text(text=random.choice(["סניף:", "-סנ'", ":מס סניף", ":מס' הסניף", "מספר סניף"]), x=random.choice([1.28]), font_size=self.h // 43)
         self.add_text(text=str(random.randint(0,1000)), x=random.choice([2.5]), font_size=self.h // 50)
 
-    def add_checkout(self, bar_down = False):
+    def add_checkout(self, bar_down=False):
         self.bar_down(7) if not bar_down else None
         self.add_text(text=random.choice(["קופה:", "-קו'", ":מס קופה", ":מס' הקופה", "מספר קופה"]), x=random.choice([4]), font_size=self.h // 43)
         self.add_text(text=str(random.randint(0,30)), x=random.choice([7]), font_size=self.h // 50)
