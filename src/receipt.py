@@ -155,13 +155,26 @@ class Receipt:
         self.bar_down(5)
         self.add_text(text=f"טל׳ {get_random_telephone()}", x=random.choice([2]), font_size=self.h // 43)
         self.bar_down(5)
+        self.add_text(text=f"פקס: {get_random_telephone()}", x=random.choice([2]), font_size=self.h // 43)
+        self.bar_down(5)
         self.add_text(text=self.fake.address().replace("(", "").replace(")", ""), x=random.choice([2]), font_size=self.h // 43)
         self.bar_down(5)
         self.add_text(text=self.fake.ascii_company_email(), x=random.choice([2]), font_size=self.h // 43)
     
     def add_receipt_id(self):
         self.bar_down(5)
-        self.add_text(text=self.fake.ascii_company_email(), x=random.choice([2]), font_size=self.h // 43)
+        self.add_text(text=random.choice(["קבלה:", "-קב'", "מס' חשבון קבלה", "מספר חשבון", "מס' חשבונית"]), x=random.choice([1.28]), font_size=self.h // 43)
+        self.add_text(text=str(random.randint(10000,99999)), x=random.choice([2]), font_size=self.h // 43)
     
+    def add_branch(self):
+        self.bar_down(7)
+        self.add_text(text=random.choice(["סניף:", "-סנ'", ":מס סניף", ":מס' הסניף", "מספר סניף"]), x=random.choice([1.28]), font_size=self.h // 43)
+        self.add_text(text=str(random.randint(0,1000)), x=random.choice([2.5]), font_size=self.h // 50)
+
+    def add_checkout(self, bar_down = False):
+        self.bar_down(7) if not bar_down else None
+        self.add_text(text=random.choice(["קופה:", "-קו'", ":מס קופה", ":מס' הקופה", "מספר קופה"]), x=random.choice([4]), font_size=self.h // 43)
+        self.add_text(text=str(random.randint(0,30)), x=random.choice([7]), font_size=self.h // 50)
+
     def do_nothing(self):
         pass
