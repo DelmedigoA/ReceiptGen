@@ -1,3 +1,4 @@
 git+https://github.com/sparkfish/augraphy
 python-barcode[images]
 Pillow==9.5.0
+faker
