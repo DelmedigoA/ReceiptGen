@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 import barcode
 from barcode.writer import ImageWriter
 from uuid import uuid4
-from src.utils import *
+from src.utils import get_height, get_random_date, get_random_telephone
 from faker import Faker
 
 class Receipt:
@@ -13,19 +13,20 @@ class Receipt:
         self,
         mode: str = "L",
         size: tuple = (300, 400),
-        color: tuple = (255,),
-        fonts_dir: str = "resources/hebrew/fonts",
-        lang: str = "he"
+        color: tuple = (255, ),
+        lang: str = "hebrew"
     ):
+        self.lang = lang
+        self.fonts_dir = f"resources/{self.lang}/fonts"
         self.mode = mode
         self.size = size
         self.color = color
-        self.direction = "rtl" if lang == "he" else "ltr"
+        self.direction = "rtl" if self.lang == "he" else "ltr"
         self.image = Image.new(mode=self.mode, size=self.size, color=self.color)
         self.draw = ImageDraw.Draw(self.image)
         self.w, self.h = self.image.size
         self.font_path = random.choice(
-            [os.path.join(fonts_dir, path) for path in os.listdir(fonts_dir) if path.endswith(".ttf")]
+            [os.path.join(self.fonts_dir, path) for path in os.listdir(self.fonts_dir) if path.endswith(".ttf")]
         )
         self.texts = [{"height": 0}]
         self.y = 0
@@ -34,14 +35,14 @@ class Receipt:
         self.set_stores()
 
     def set_products(self):
-        with open("/content/ReceiptGen/resources/hebrew/products/names.txt", "r") as file:
+        with open(f"/content/ReceiptGen/resources/{self.lang}/products/names.txt", "r") as file:
             text = file.read()
             products = text.split("\n")
             random.shuffle(products)
             self.products = list(set([p.strip().replace("  ", " ") for p in products if len(p) < 20]))
     
     def set_stores(self):
-        with open("/content/ReceiptGen/resources/hebrew/stores/names.txt", "r") as file:
+        with open(f"/content/ReceiptGen/resources/{self.lang}/stores/names.txt", "r") as file:
             text = file.read()
             stores = text.split("\n")
             random.shuffle(stores)
