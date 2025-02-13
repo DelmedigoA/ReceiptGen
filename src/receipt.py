@@ -6,6 +6,7 @@ import barcode
 from barcode.writer import ImageWriter
 from uuid import uuid4
 from src.utils import *
+from faker import Faker
 
 class Receipt:
     def __init__(
@@ -28,6 +29,25 @@ class Receipt:
         )
         self.texts = [{"height": 0}]
         self.y = 0
+        self.fake = Faker("he_IL")
+        self.set_products()
+        self.set_stores()
+
+    def set_products(self):
+        with open("/content/ReceiptGen/resources/hebrew/products/names.txt", "r") as file:
+            text = file.read()
+            products = text.split("\n")
+            random.shuffle(products)
+            self.products = list(set([p.strip().replace("  ", " ") for p in products if len(p) < 20]))
+    
+    def set_stores(self):
+        with open("/content/ReceiptGen/resources/hebrew/stores/names.txt", "r") as file:
+            text = file.read()
+            stores = text.split("\n")
+            random.shuffle(stores)
+            stores = list(set([s.strip().replace("  ", " ") for s in stores]))
+
+        self.israel_supermarkets = stores
 
     def reset(self):
         self.image = Image.new(mode=self.mode, size=self.size, color=self.color)
@@ -74,6 +94,7 @@ class Receipt:
         paste_x = (self.w - barcode_img.width) // 2
         self.image.paste(barcode_img, (paste_x, paste_y))
         self.texts.append(dict(text="BARCOD", x=paste_x, y=self.y, height=new_height))
+
     
     def show(self):
         display(self.image)
@@ -84,7 +105,7 @@ class Receipt:
     
     def add_entity(self):
         self.bar_down(10)
-        self.add_text(text=random.choice(israel_supermarkets), x=random.choice([2]), font_size=self.h // 23)
+        self.add_text(text=random.choice(self.israel_supermarkets), x=random.choice([2]), font_size=self.h // 23)
     
     def add_summary(self):
         self.bar_down(random.randint(0, self.h // 40))
@@ -96,7 +117,8 @@ class Receipt:
         self.bar_down(random.randint(0, self.h // 20))
         self.add_text(text=" ".join(["-"] * (self.h // 3)), x=random.choice([2]), font_size=self.h // 43)
     
-    def add_table(self, prod_list=products):
+    def add_table(self,):
+        prod_list=self.products
         self.bar_down(random.randint(0, self.h // 10))
         columns = ["תיאור", "מחיר", "כמות", "לתשלום"]
         xs = [1.15, 2, 3, 10]
@@ -125,20 +147,20 @@ class Receipt:
     
     def add_domain(self):
         self.bar_down(5)
-        self.add_text(text=fake.domain_name(), x=random.choice([2]), font_size=self.h // 43)
+        self.add_text(text=self.fake.domain_name(), x=random.choice([2]), font_size=self.h // 43)
     
     def add_detailes(self):
         self.bar_down(5)
         self.bar_down(5)
         self.add_text(text=f"טל׳ {get_random_telephone()}", x=random.choice([2]), font_size=self.h // 43)
         self.bar_down(5)
-        self.add_text(text=fake.address().replace("(", "").replace(")", ""), x=random.choice([2]), font_size=self.h // 43)
+        self.add_text(text=self.fake.address().replace("(", "").replace(")", ""), x=random.choice([2]), font_size=self.h // 43)
         self.bar_down(5)
-        self.add_text(text=fake.ascii_company_email(), x=random.choice([2]), font_size=self.h // 43)
+        self.add_text(text=self.fake.ascii_company_email(), x=random.choice([2]), font_size=self.h // 43)
     
     def add_receipt_id(self):
         self.bar_down(5)
-        self.add_text(text=fake.ascii_company_email(), x=random.choice([2]), font_size=self.h // 43)
+        self.add_text(text=self.fake.ascii_company_email(), x=random.choice([2]), font_size=self.h // 43)
     
     def do_nothing(self):
         pass
