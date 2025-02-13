@@ -1,4 +1,18 @@
 import random
+from PIL import Image
+import numpy as np
+
+def crop_white_borders(image):
+    arr = np.array(image)
+    white_rows = np.all(arr == 255, axis=1)
+    nonwhite = np.where(~white_rows)[0]
+    if nonwhite.size == 0:
+        return image
+    top = nonwhite[0]
+    bottom = nonwhite[-1] + 1
+    cropped = arr[top:bottom, :]
+    return Image.fromarray(cropped, 'L')
+    
 def get_height(font, text):
       ascent, descent = font.getmetrics()
       (width, baseline), (offset_x, offset_y) = font.font.getsize(text)
