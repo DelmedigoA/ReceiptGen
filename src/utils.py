@@ -37,3 +37,8 @@ def get_random_date():
     day = random.randint(1, 28)
     seperator = "/" if random.random() > .5 else "-"
     return f"{day}{seperator}{month}{seperator}{year}"
+
+def get_product_id():
+    first_digit = "7"
+    number = str(random.randint(1e11,1e12))
+    return first_digit + number

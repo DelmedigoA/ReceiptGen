@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 import barcode
 from barcode.writer import ImageWriter
 from uuid import uuid4
-from src.utils import get_height, get_random_date, get_random_telephone
+from src.utils import get_height, get_random_date, get_random_telephone, get_product_id
 from faker import Faker
 import numpy as np
 
@@ -141,7 +141,7 @@ class Receipt:
         self.bar_down()
         for x, col in zip(xs, columns):
             self.add_text(text=(len(col) + 2) * "-", x=x, font_size=14)
-        product_names = random.choices(prod_list, k=8)
+        product_names = [get_product_id() for i in range(random.randint(1,8))]
         random.shuffle(product_names)
         product_prices = ["{:.2f}".format(random.uniform(1, 10)) for _ in range(len(product_names))]
         quantities = [random.randint(1, 5) for _ in range(len(product_names))]
@@ -152,13 +152,13 @@ class Receipt:
         self.bar_down(random.randint(0, self.h // 20))
         b_down = random.randint(0, self.h // 30)
         for product in prod_items:
-            self.add_text(text=product["price"], x=2, font_size=14)
-            self.add_text(text=str(product["quantity"]), x=3, font_size=14)
+            self.add_text(text=product["price"], x=2, font_size= self.h // 43)
+            self.add_text(text=str(product["quantity"]), x=3, font_size= self.h // 43)
             row_total = float(product["price"]) * product["quantity"]
             self.total_without_maam += row_total
             row_total_str = "{:.2f}".format(row_total)
-            self.add_text(text=" ₪" + row_total_str, x=10, font_size=12)
-            self.add_text(text=product["name"], x=1.15, font_size=14)
+            self.add_text(text=" ₪" + row_total_str, x=10, font_size= self.h // 43)
+            self.add_text(text=product["name"], x=1.15, font_size= self.h // 43)
             self.bar_down(b_down)
     
     def add_domain(self):
