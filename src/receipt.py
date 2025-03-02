@@ -34,6 +34,7 @@ class Receipt:
         self.fake = Faker("he_IL")
         self.set_products()
         self.set_stores()
+        self.text_size = self.h // 60
 
     def set_products(self):
         with open(f"/content/ReceiptGen/resources/{self.lang}/products/names.txt", "r") as file:
@@ -112,24 +113,24 @@ class Receipt:
 
     def add_date(self):
         self.bar_down(random.randint(0, self.h // 100))
-        self.add_text(text=get_random_date(), x=random.choice([100, 2, 1]), font_size=self.h // 43)
+        self.add_text(text=get_random_date(), x=random.choice([100, 2, 1]), font_size=self.text_size)
     
     def add_entity(self):
         self.bar_down(10)
-        self.add_text(text=random.choice(self.israel_supermarkets), x=random.choice([2]), font_size=self.h // 23)
+        self.add_text(text=random.choice(self.israel_supermarkets), x=random.choice([2]), font_size=self.text_size)
     
     def add_summary(self):
         self.bar_down(random.randint(0, self.h // 40))
         base_total_str = "{:.2f}".format(self.total_without_maam)
-        self.add_text(text="תשלום ללא מעמ                         " + base_total_str, x=random.choice([2]), font_size=self.h // 43)
+        self.add_text(text="תשלום ללא מעמ                         " + base_total_str, x=random.choice([2]), font_size=self.text_size)
         self.bar_down(random.randint(0, self.h // 40))
         final_total = self.total_without_maam * 1.18  # adding 18.0% VAT
         final_total_str = "{:.2f}".format(final_total)
-        self.add_text(text="סהכ לתשלום                        " + final_total_str, x=random.choice([2]), font_size=self.h // 43)
+        self.add_text(text="סהכ לתשלום                        " + final_total_str, x=random.choice([2]), font_size=self.text_size)
     
     def add_dotted_lines_before_table(self):
         self.bar_down(random.randint(0, self.h // 20))
-        self.add_text(text=" ".join(["-"] * (self.h // 3)), x=random.choice([2]), font_size=self.h // 43)
+        self.add_text(text=" ".join(["-"] * (self.h // 3)), x=random.choice([2]), font_size=self.text_size)
     
     def add_table(self):
         prod_list = self.products
@@ -152,43 +153,43 @@ class Receipt:
         self.bar_down(random.randint(0, self.h // 20))
         b_down = random.randint(0, self.h // 30)
         for product in prod_items:
-            self.add_text(text=product["price"], x=2, font_size= self.h // 43)
-            self.add_text(text=str(product["quantity"]), x=3, font_size= self.h // 43)
+            self.add_text(text=product["price"], x=2, font_size= self.text_size)
+            self.add_text(text=str(product["quantity"]), x=3, font_size= self.text_size)
             row_total = float(product["price"]) * product["quantity"]
             self.total_without_maam += row_total
             row_total_str = "{:.2f}".format(row_total)
-            self.add_text(text=" ₪" + row_total_str, x=10, font_size= self.h // 43)
-            self.add_text(text=product["name"], x=1.15, font_size= self.h // 43)
+            self.add_text(text=" ₪" + row_total_str, x=10, font_size=self.text_size)
+            self.add_text(text=product["name"], x=1.15, font_size=self.text_size)
             self.bar_down(b_down)
     
     def add_domain(self):
         self.bar_down(5)
-        self.add_text(text=self.fake.domain_name(), x=random.choice([2]), font_size=self.h // 43)
+        self.add_text(text=self.fake.domain_name(), x=random.choice([2]), font_size=self.text_size)
     
     def add_detailes(self):
         self.bar_down(5)
         self.bar_down(5)
-        self.add_text(text=f"טל׳ {get_random_telephone()}", x=random.choice([2]), font_size=self.h // 43)
+        self.add_text(text=f"טל׳ {get_random_telephone()}", x=random.choice([2]), font_size=self.text_size)
         self.bar_down(5)
-        self.add_text(text=f"פקס: {get_random_telephone()}", x=random.choice([2]), font_size=self.h // 43)
+        self.add_text(text=f"פקס: {get_random_telephone()}", x=random.choice([2]), font_size=self.text_size)
         self.bar_down(5)
-        self.add_text(text=self.fake.address().replace("(", "").replace(")", ""), x=random.choice([2]), font_size=self.h // 43)
+        self.add_text(text=self.fake.address().replace("(", "").replace(")", ""), x=random.choice([2]), font_size=self.text_size)
         self.bar_down(5)
-        self.add_text(text=self.fake.ascii_company_email(), x=random.choice([2]), font_size=self.h // 43)
+        self.add_text(text=self.fake.ascii_company_email(), x=random.choice([2]), font_size=self.text_size)
     
     def add_receipt_id(self):
         self.bar_down(5)
-        self.add_text(text=random.choice(["קבלה:", "-קב'", "מס' חשבון קבלה", "מספר חשבון", "מס' חשבונית"]), x=random.choice([1.28]), font_size=self.h // 43)
+        self.add_text(text=random.choice(["קבלה:", "-קב'", "מס' חשבון קבלה", "מספר חשבון", "מס' חשבונית"]), x=random.choice([1.28]), font_size=self.text_size)
         self.add_text(text=str(random.randint(10000,99999)), x=random.choice([2]), font_size=self.h // 43)
     
     def add_branch(self):
         self.bar_down(7)
-        self.add_text(text=random.choice(["סניף:", "-סנ'", ":מס סניף", ":מס' הסניף", "מספר סניף"]), x=random.choice([1.28]), font_size=self.h // 43)
+        self.add_text(text=random.choice(["סניף:", "-סנ'", ":מס סניף", ":מס' הסניף", "מספר סניף"]), x=random.choice([1.28]), font_size=self.text_size)
         self.add_text(text=str(random.randint(0,1000)), x=random.choice([2.5]), font_size=self.h // 50)
 
     def add_checkout(self, bar_down=False):
         self.bar_down(7) if not bar_down else None
-        self.add_text(text=random.choice(["קופה:", "-קו'", ":מס קופה", ":מס' הקופה", "מספר קופה"]), x=random.choice([4]), font_size=self.h // 43)
+        self.add_text(text=random.choice(["קופה:", "-קו'", ":מס קופה", ":מס' הקופה", "מספר קופה"]), x=random.choice([4]), font_size=self.text_size)
         self.add_text(text=str(random.randint(0,30)), x=random.choice([7]), font_size=self.h // 50)
 
     def do_nothing(self):
