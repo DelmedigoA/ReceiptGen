@@ -135,31 +135,34 @@ class Receipt:
     def add_table(self):
         prod_list = self.products
         self.bar_down(random.randint(0, self.h // 10))
-        columns = ["תיאור", "מחיר", "כמות", "לתשלום"]
-        xs = [1.15, 2, 3, 10]
+        columns = ['קוד', 'תאור', 'כמות']
+        xs = [1.15, 2, 10]
         for x, col in zip(xs, columns):
             self.add_text(text=col, x=x, font_size=14)
         self.bar_down()
         for x, col in zip(xs, columns):
             self.add_text(text=(len(col) + 2) * "-", x=x, font_size=14)
-        product_names = [get_product_id() for i in range(random.randint(1,8))]
+        product_ids = [get_product_id() for i in range(random.randint(1,8))]
         random.shuffle(product_names)
         product_prices = ["{:.2f}".format(random.uniform(1, 10)) for _ in range(len(product_names))]
-        quantities = [random.randint(1, 5) for _ in range(len(product_names))]
+        quantities = ["{:.3f}".format(random.randint(1,200) / 100) for _ in range(len(product_names))]
         prod_items = []
-        for name, price, quantity in zip(product_names, product_prices, quantities):
+        for name, price, quantity in zip(product_ids, product_prices, quantities):
             prod_items.append({"name": name, "price": price, "quantity": quantity})
         self.total_without_maam = 0.0  # initialize the sum before VAT
         self.bar_down(random.randint(0, self.h // 20))
         b_down = random.randint(0, self.h // 30)
         for product in prod_items:
-            self.add_text(text=product["price"], x=2, font_size= self.text_size)
-            self.add_text(text=str(product["quantity"]), x=3, font_size= self.text_size)
-            row_total = float(product["price"]) * product["quantity"]
+            #self.add_text(text=product["price"], x=2, font_size= self.text_size)
+            row_total = float(product["price"]) * float(product["quantity"])
             self.total_without_maam += row_total
             row_total_str = "{:.2f}".format(row_total)
-            self.add_text(text=" ₪" + row_total_str, x=10, font_size=self.text_size)
+      
             self.add_text(text=product["name"], x=1.15, font_size=self.text_size)
+            self.bar_down(b_down)
+            self.add_text(text=f"""X {random.randint(1,100) / 100:.2f} לק"ג""", x=3, font_size=self.text_size)
+            self.add_text(text=str(product["quantity"]), x=1.5, font_size= self.text_size)
+            self.add_text(text=" ₪" + row_total_str, x=10, font_size=self.text_size)
             self.bar_down(b_down)
     
     def add_domain(self):
