@@ -18,7 +18,7 @@ class BarcodeHandler:
             "foreground": (0, 0, 0),
             "text_distance": 8,
             "center_text": True,
-            "font_path": "/content/ReceiptGen/resources/hebrew/fonts/cour.ttf",
+            "font_path": self.font_path,
             "quiet_zone": 1.0,
             "font_size": 16,
             "module_width": 0.25,
@@ -29,8 +29,9 @@ class BarcodeHandler:
         barcode_img = barcode_img.convert("L")
         new_width = width
         new_height = int(barcode_img.height * (new_width / barcode_img.width))
-        barcode_img = barcode_img.resize((new_width, new_height)).rotate(0, fillcolor=(255,), expand=True)
+        barcode_img = barcode_img.resize((new_width, new_height))
         paste_y = self.y
         paste_x = (self.w - barcode_img.width) // 2
         self.image.paste(barcode_img, (paste_x, paste_y))
         self.texts.append(dict(text="BARCOD", x=paste_x, y=self.y, height=new_height))
+        self.data.append({"barcode_number": number})

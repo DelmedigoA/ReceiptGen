@@ -4,8 +4,10 @@ from .utils import *
 class ReceiptElements:
     """Class for receipt-specific elements"""
     def add_date(self):
+        date = get_random_date()
         self.bar_down(random.randint(0, self.h // 100))
-        self.add_text(text=get_random_date(), x=random.choice([100, 2, 1]), font_size=self.text_size)
+        self.add_text(text=date, x=random.choice([100, 2, 1]), font_size=self.text_size)
+        self.data.append({"date": date,})
     
     def add_entity(self):
         self.bar_down(10)
@@ -30,7 +32,7 @@ class ReceiptElements:
         self.add_text(text=" ".join(["-"] * (self.h // 3)), x=random.choice([2]), font_size=self.text_size)
     
     def add_table(self):
-        self.bar_down(random.randint(0, self.h // 10))
+        self.bar_down(random.randint(0, self.h // 30))
         columns = ['קוד', 'כמות', 'סכום']
         xs = [1.15, 2, 10]
         for x, col in zip(xs, columns):
@@ -41,17 +43,17 @@ class ReceiptElements:
         
         product_ids = [get_product_id() for i in range(random.randint(1,8))]
         random_products = random.sample(self.products, len(product_ids)) if len(self.products) >= len(product_ids) else self.products
-        product_prices = ["{:.2f}".format(random.uniform(1, 10)) for _ in range(len(product_ids))]
+        product_prices = ["{:.2f}".format(random.uniform(0, 100) if random.random() > 0.1 else random.uniform(-30, 0)) for _ in range(len(product_ids))]
         quantities = ["{:.3f}".format(random.randint(1,200) / 100) for _ in range(len(product_ids))]
         
         prod_items = []
         for name, price, quantity in zip(product_ids, product_prices, quantities):
             prod_dict = {"name": name, "price": price, "quantity": quantity}
             prod_items.append(prod_dict)
-            self.data.append(prod_dict)
+            
         
         self.total_without_maam = 0.0  # initialize the sum before VAT
-        self.bar_down(random.randint(0, self.h // 40))
+        self.bar_down()
         b_down = random.randint(0, self.h // 80)
         
         for product in prod_items:
@@ -63,15 +65,21 @@ class ReceiptElements:
             if is_weighted_product:
                 self.add_text(text=product["name"], x=1.15, font_size=self.text_size)
                 self.bar_down(b_down)
-                self.add_text(text=f"""X {random.randint(1,100) / 100:.2f} לק"ג""", x=3, font_size=self.text_size)
+                kg_price = random.randint(1,500) / 100
+                self.add_text(text=f"""X {kg_price:.2f} לק"ג""", x=3, font_size=self.text_size)
                 self.add_text(text=str(product["quantity"]), x=1.5, font_size=self.text_size)
                 self.add_text(text=" ₪" + row_total_str, x=10, font_size=self.text_size)
                 self.bar_down(b_down)
             else:
+                kg_price = None
+                product["quantity"] = random.randint(1, 5)
                 self.add_text(text=product["name"], x=1.15, font_size=self.text_size)
                 self.add_text(text=str(product["quantity"]), x=2.0, font_size=self.text_size)
                 self.add_text(text=" ₪" + row_total_str, x=10, font_size=self.text_size)
                 self.bar_down(b_down)
+
+            self.data.append({"name": product["name"], "quantity": product["quantity"], "kg_price": kg_price if kg_price is not None else "-", "price_payed": row_total_str})
+
     
     def add_domain(self):
         self.bar_down(5)
@@ -113,16 +121,19 @@ class ReceiptElements:
 
     def add_branch(self):
         self.bar_down(7)
-        self.add_text(text=random.choice(["סניף:", "-סנ'", ":מס סניף", ":מס' הסניף", "מספר סניף"]), 
-                     x=random.choice([1.28]), font_size=self.text_size)
+        branch = random.choice(["סניף:", "-סנ'", ":מס סניף", ":מס' הסניף", "מספר סניף"])
+        self.add_text(text=branch, x=1.28, font_size=self.text_size)
         self.add_text(text=str(random.randint(0,1000)), x=random.choice([2.5]), font_size=self.h // 50)
+        self.data.append({"branch": branch,})
 
     def add_checkout(self, bar_down=False):
         if bar_down:
             self.bar_down(7)
-        self.add_text(text=random.choice(["קופה:", "-קו'", ":מס קופה", ":מס' הקופה", "מספר קופה"]), 
-                     x=random.choice([4]), font_size=self.text_size)
-        self.add_text(text=str(random.randint(0,30)), x=random.choice([7]), font_size=self.h // 50)
-
+        checkout = random.choice(["קופה:", "-קו'", ":מס קופה", ":מס' הקופה", "מספר קופה"])
+        self.add_text(text=checkout, x=4, font_size=self.text_size)
+        check_out_num = str(random.randint(0,30))
+        self.add_text(text=check_out_num, x=random.choice([7]), font_size=self.h // 50)
+        self.data.append({"checkout": checkout})
+  
     def do_nothing(self):
         pass
