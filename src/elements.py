@@ -9,8 +9,10 @@ class ReceiptElements:
     
     def add_entity(self):
         self.bar_down(10)
-        self.add_text(text=random.choice(self.israel_supermarkets), x=random.choice([2]), font_size=self.text_size)
-    
+        entity = random.choice(self.israel_supermarkets)
+        self.add_text(text=entity, x=random.choice([2]), font_size=self.h // 20)
+        self.data.append({"entity": entity})
+
     def add_summary(self):
         self.bar_down(random.randint(0, self.h // 40))
         base_total_str = "{:.2f}".format(self.total_without_maam)
@@ -21,14 +23,15 @@ class ReceiptElements:
         final_total_str = "{:.2f}".format(final_total)
         self.add_text(text="סהכ לתשלום                        " + final_total_str, 
                      x=random.choice([2]), font_size=self.text_size)
-    
+        self.data.append({"total_without_maam": base_total_str, "final_total": final_total_str})
+
     def add_dotted_lines_before_table(self):
         self.bar_down(random.randint(0, self.h // 20))
         self.add_text(text=" ".join(["-"] * (self.h // 3)), x=random.choice([2]), font_size=self.text_size)
     
     def add_table(self):
         self.bar_down(random.randint(0, self.h // 10))
-        columns = ['קוד', 'תאור', 'כמות']
+        columns = ['קוד', 'כמות', 'סכום']
         xs = [1.15, 2, 10]
         for x, col in zip(xs, columns):
             self.add_text(text=col, x=x, font_size=14)
@@ -37,54 +40,77 @@ class ReceiptElements:
             self.add_text(text=(len(col) + 2) * "-", x=x, font_size=14)
         
         product_ids = [get_product_id() for i in range(random.randint(1,8))]
-        # Note: There was a reference to product_names which isn't defined in the original code
-        # I'm assuming it should be taking names from self.products
         random_products = random.sample(self.products, len(product_ids)) if len(self.products) >= len(product_ids) else self.products
         product_prices = ["{:.2f}".format(random.uniform(1, 10)) for _ in range(len(product_ids))]
         quantities = ["{:.3f}".format(random.randint(1,200) / 100) for _ in range(len(product_ids))]
         
         prod_items = []
         for name, price, quantity in zip(product_ids, product_prices, quantities):
-            prod_items.append({"name": name, "price": price, "quantity": quantity})
+            prod_dict = {"name": name, "price": price, "quantity": quantity}
+            prod_items.append(prod_dict)
+            self.data.append(prod_dict)
         
         self.total_without_maam = 0.0  # initialize the sum before VAT
-        self.bar_down(random.randint(0, self.h // 20))
-        b_down = random.randint(0, self.h // 30)
+        self.bar_down(random.randint(0, self.h // 40))
+        b_down = random.randint(0, self.h // 80)
         
         for product in prod_items:
             row_total = float(product["price"]) * float(product["quantity"])
             self.total_without_maam += row_total
             row_total_str = "{:.2f}".format(row_total)
-      
-            self.add_text(text=product["name"], x=1.15, font_size=self.text_size)
-            self.bar_down(b_down)
-            self.add_text(text=f"""X {random.randint(1,100) / 100:.2f} לק"ג""", x=3, font_size=self.text_size)
-            self.add_text(text=str(product["quantity"]), x=1.5, font_size=self.text_size)
-            self.add_text(text=" ₪" + row_total_str, x=10, font_size=self.text_size)
-            self.bar_down(b_down)
+
+            is_weighted_product = random.random() > 0.5
+            if is_weighted_product:
+                self.add_text(text=product["name"], x=1.15, font_size=self.text_size)
+                self.bar_down(b_down)
+                self.add_text(text=f"""X {random.randint(1,100) / 100:.2f} לק"ג""", x=3, font_size=self.text_size)
+                self.add_text(text=str(product["quantity"]), x=1.5, font_size=self.text_size)
+                self.add_text(text=" ₪" + row_total_str, x=10, font_size=self.text_size)
+                self.bar_down(b_down)
+            else:
+                self.add_text(text=product["name"], x=1.15, font_size=self.text_size)
+                self.add_text(text=str(product["quantity"]), x=2.0, font_size=self.text_size)
+                self.add_text(text=" ₪" + row_total_str, x=10, font_size=self.text_size)
+                self.bar_down(b_down)
     
     def add_domain(self):
         self.bar_down(5)
-        self.add_text(text=self.fake.domain_name(), x=random.choice([2]), font_size=self.text_size)
+        domain = self.fake.domain_name()
+        self.add_text(text=domain, x=random.choice([2]), font_size=self.text_size)
+        self.data.append({"domain": domain})
     
     def add_details(self):
         self.bar_down(5)
         self.bar_down(5)
-        self.add_text(text=f"טל׳ {get_random_telephone()}", x=random.choice([2]), font_size=self.text_size)
+
+        tl = get_random_telephone()
+        self.add_text(text=f"טל׳ {tl}", x=random.choice([2]), font_size=self.text_size)
+        self.data.append({"telephone": tl})
         self.bar_down(5)
-        self.add_text(text=f"פקס: {get_random_telephone()}", x=random.choice([2]), font_size=self.text_size)
+        
+        fax = get_random_telephone()
+        self.add_text(text=f"פקס: {fax}", x=random.choice([2]), font_size=self.text_size)
+        self.data.append({"fax": fax})
+
+        address = self.fake.address()
         self.bar_down(5)
-        self.add_text(text=self.fake.address().replace("(", "").replace(")", ""), 
+        self.add_text(text=address.replace("(", "").replace(")", ""), 
                      x=random.choice([2]), font_size=self.text_size)
+        self.data.append({"address": address})
+        
+        email = self.fake.ascii_company_email()
         self.bar_down(5)
-        self.add_text(text=self.fake.ascii_company_email(), x=random.choice([2]), font_size=self.text_size)
-    
+        self.add_text(text=email, x=random.choice([2]), font_size=self.text_size)
+        self.data.append({"email": email})
+
     def add_receipt_id(self):
         self.bar_down(5)
         self.add_text(text=random.choice(["קבלה:", "-קב'", "מס' חשבון קבלה", "מספר חשבון", "מס' חשבונית"]), 
                      x=random.choice([1.28]), font_size=self.text_size)
-        self.add_text(text=str(random.randint(10000,99999)), x=random.choice([2]), font_size=self.h // 43)
-    
+        receipt_id = str(random.randint(10000,99999))
+        self.add_text(text=receipt_id, x=random.choice([2]), font_size=self.h // 43)
+        self.data.append({"receipt_id": receipt_id})
+
     def add_branch(self):
         self.bar_down(7)
         self.add_text(text=random.choice(["סניף:", "-סנ'", ":מס סניף", ":מס' הסניף", "מספר סניף"]), 

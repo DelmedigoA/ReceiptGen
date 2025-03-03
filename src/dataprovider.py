@@ -12,14 +12,14 @@ class DataProvider:
         self.set_stores()
     
     def set_products(self):
-        with open(f"/content/ReceiptGen/resources/{self.lang}/products/names.txt", "r") as file:
+        with open(f"resources/{self.lang}/products/names.txt", "r") as file:
             text = file.read()
             products = text.split("\n")
             random.shuffle(products)
             self.products = list(set([p.strip().replace("  ", " ") for p in products if len(p) < 20]))
     
     def set_stores(self):
-        with open(f"/content/ReceiptGen/resources/{self.lang}/stores/names.txt", "r") as file:
+        with open(f"resources/{self.lang}/stores/names.txt", "r") as file:
             text = file.read()
             stores = text.split("\n")
             random.shuffle(stores)

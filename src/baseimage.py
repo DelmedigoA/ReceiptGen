@@ -34,6 +34,7 @@ class BaseImage:
         self.texts = [{"height": 0}]
         self.y = 0
         self.text_size = self.h // 60
+        self.data = []
     
     def reset(self):
         self.image = Image.new(mode=self.mode, size=self.size, color=self.color)
@@ -65,5 +66,8 @@ class BaseImage:
         cropped = arr[top:bottom, :]
         self.image = Image.fromarray(cropped, 'L')
     
+    def set_font_path(self, font_path):
+        self.font_path = font_path
+
     def show(self):
         display(self.image)
