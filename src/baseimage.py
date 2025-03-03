@@ -42,6 +42,7 @@ class BaseImage:
         self.w, self.h = self.image.size
         self.texts = [{"height": 0}]
         self.y = 0
+        self.data = []
     
     def add_text(self, text, x, font_size, fill=(0)):
         font = ImageFont.truetype(self.font_path, size=font_size)
