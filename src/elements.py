@@ -45,13 +45,12 @@ class ReceiptElements:
         random_products = random.sample(self.products, len(product_ids)) if len(self.products) >= len(product_ids) else self.products
         product_prices = ["{:.2f}".format(random.uniform(0, 100) if random.random() > 0.1 else random.uniform(-30, 0)) for _ in range(len(product_ids))]
         quantities = ["{:.3f}".format(random.randint(1,200) / 100) for _ in range(len(product_ids))]
-        
+        prod_str_names = random.choices(self.products, k=len(product_ids))
         prod_items = []
-        for name, price, quantity in zip(product_ids, product_prices, quantities):
-            prod_dict = {"name": name, "price": price, "quantity": quantity}
+        for product_id, name, price, quantity in zip(product_ids, prod_str_names, product_prices, quantities, ):
+            prod_dict = {"code": product_id, "name": name, "price": price, "quantity": quantity}
             prod_items.append(prod_dict)
-            
-        
+
         self.total_without_maam = 0.0  # initialize the sum before VAT
         self.bar_down()
         b_down = random.randint(0, self.h // 80)
@@ -63,22 +62,25 @@ class ReceiptElements:
 
             is_weighted_product = random.random() > 0.5
             if is_weighted_product:
-                self.add_text(text=product["name"], x=1.15, font_size=self.text_size)
+                self.add_text(text=product["code"], x=1.15, font_size=self.text_size)
+                self.add_text(text=product["name"], x=2.5, font_size=self.text_size)
                 self.bar_down(b_down)
                 kg_price = random.randint(1,500) / 100
                 self.add_text(text=f"""X {kg_price:.2f} לק"ג""", x=3, font_size=self.text_size)
                 self.add_text(text=str(product["quantity"]), x=1.5, font_size=self.text_size)
                 self.add_text(text=" ₪" + row_total_str, x=10, font_size=self.text_size)
                 self.bar_down(b_down)
+
             else:
                 kg_price = None
                 product["quantity"] = random.randint(1, 5)
-                self.add_text(text=product["name"], x=1.15, font_size=self.text_size)
+                self.add_text(text=product["code"], x=1.15, font_size=self.text_size)
+                self.add_text(text=product["name"], x=3.3, font_size=self.text_size)
                 self.add_text(text=str(product["quantity"]), x=2.0, font_size=self.text_size)
                 self.add_text(text=" ₪" + row_total_str, x=10, font_size=self.text_size)
                 self.bar_down(b_down)
 
-            self.data.append({"name": product["name"], "quantity": product["quantity"], "kg_price": kg_price if kg_price is not None else "-", "price_payed": row_total_str})
+            self.data.append({"code": product["code"], "name": product["name"], "quantity": product["quantity"], "kg_price": kg_price if kg_price is not None else "-", "price_payed": row_total_str})
 
     
     def add_domain(self):
